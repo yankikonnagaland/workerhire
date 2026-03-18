@@ -528,6 +528,9 @@ textarea.fi { height: auto; padding: 9px 11px; resize: vertical; min-height: 72p
         <option>Electrician</option><option>Plumber</option><option>Tile Mason</option>
         <option>Brick Mason</option><option>Cement Mason</option>
         <option>Carpenter</option><option>Painter</option><option>Welder</option>
+        <option>Backhoe Loader Operator</option><option>Track Excavator Operator</option>
+        <option>Tandem Road Roller Operator</option><option>Tipper Truck Driver</option>
+        <option>Heavy Machinery Mechanic</option><option>Electrification &amp; Plumbing</option>
       </select>
       <select class="filter-select" id="filterAvail" onchange="applyFilters()">
         <option value="">Any availability</option>
@@ -581,30 +584,104 @@ textarea.fi { height: auto; padding: 9px 11px; resize: vertical; min-height: 72p
 <script>
 const SKILLS = {
   'Electrician':'⚡','Plumber':'🔧','Tile Mason':'🪟',
-  'Brick Mason':'🧱','Cement Mason':'🏗️','Carpenter':'🪚','Painter':'🎨','Welder':'🔥'
+  'Brick Mason':'🧱','Cement Mason':'🏗️','Carpenter':'🪚','Painter':'🎨','Welder':'🔥',
+  'Backhoe Loader Operator':'🚜','Track Excavator Operator':'⛏️',
+  'Tandem Road Roller Operator':'🛞','Tipper Truck Driver':'🚛',
+  'Heavy Machinery Mechanic':'🔩','Electrification & Plumbing':'🔌'
 };
 const SKILL_BG = {
   'Electrician':'#fffbeb','Plumber':'#eff6ff','Tile Mason':'#f0fdf4',
   'Brick Mason':'#fff1f2','Cement Mason':'#f8fafc','Carpenter':'#fff7ed',
-  'Painter':'#faf5ff','Welder':'#fefce8'
+  'Painter':'#faf5ff','Welder':'#fefce8',
+  'Backhoe Loader Operator':'#fdf3e3','Track Excavator Operator':'#f0fdf4',
+  'Tandem Road Roller Operator':'#f0f4ff','Tipper Truck Driver':'#fff7ed',
+  'Heavy Machinery Mechanic':'#f4f4f5','Electrification & Plumbing':'#eaf1fb'
 };
 const em = s => SKILLS[s]||'🔨';
 const stars = r => '★'.repeat(Math.round(r))+'☆'.repeat(5-Math.round(r));
 const lvlC = l => l==='Expert'?'lvl-e':l==='Senior'?'lvl-s':'lvl-j';
 
 let workers = [
-  {id:1,name:'Abemo Kinghen',skill:'Electrician',level:'Expert',exp:12,rating:4.8,location:'Wokha',contact:'9402988510',available:true,rate:700,about:'Certified wireman with 12 years of residential with multiple contractors.'},
-  {id:2,name:'Sanen Imchen',skill:'Plumber',level:'Senior',exp:7,rating:4.6,location:'Mokokchung',contact:'98838383838',available:true,rate:600,about:'Specialises in leak repair, pipe fittings in bathrooms.'},
-  {id:3,name:'Theja Kire',skill:'Tile Mason',level:'Expert',exp:9,rating:4.9,location:'Chumoukedima',contact:'9834567890',available:false,rate:650,about:'Expert in floor tiles with fine finsihing.'},
-  {id:4,name:'Aremo Yanthan',skill:'Brick Mason',level:'Senior',exp:15,rating:4.7,location:'Kohima',contact:'9801234567',available:true,rate:550,about:'Experienced in structural brickwork and boundary walls.'},
-  {id:5,name:'Hongba Chang',skill:'Cement Mason',level:'Junior',exp:3,rating:4.1,location:'Tuensang',contact:'9867890123',available:true,rate:450,about:'Concrete finishing and plastering specialist.'},
-  {id:6,name:'Yanger Long',skill:'Carpenter',level:'Expert',exp:18,rating:5.0,location:'Dimapur',contact:'9845678901',available:true,rate:750,about:'Custom furniture, door frames and wooden fixtures.'},
-  {id:7,name:'Rovi Metha',skill:'Electrician',level:'Senior',exp:6,rating:4.4,location:'Kohima',contact:'9823456789',available:false,rate:650,about:'Wiring, switchboard installation and solar panel setup.'},
-  {id:8,name:'Kevin Konyak',skill:'Painter',level:'Junior',exp:2,rating:3.9,location:'Mon',contact:'9889012345',available:true,rate:400,about:'Interior and exterior painting with texture finishes.'},
-  {id:9,name:'Ameto Achumi',skill:'Welder',level:'Expert',exp:10,rating:4.7,location:'Zunheboto',contact:'9856789012',available:true,rate:800,about:'Arc welding, gate fabrication and steel structure work.'},
-  {id:10,name:'Bito Chishi',skill:'Plumber',level:'Expert',exp:11,rating:4.5,location:'Niuland',contact:'9878901234',available:true,rate:680,about:'Overhead tank installation, drainage and sanitary fittings.'},
+  // ── Original sample workers ──
+  {id:1,name:'Rajesh Kumar',skill:'Electrician',level:'Expert',exp:12,rating:4.8,location:'Agartala',contact:'9876543210',available:true,rate:700,about:'Certified wireman with 12 years of residential & commercial experience.'},
+  {id:2,name:'Sunil Das',skill:'Plumber',level:'Senior',exp:7,rating:4.6,location:'Agartala',contact:'9812345678',available:true,rate:600,about:'Specialises in pipe fitting, leak repair and bathroom installations.'},
+  {id:3,name:'Anil Saha',skill:'Tile Mason',level:'Expert',exp:9,rating:4.9,location:'Agartala',contact:'9834567890',available:false,rate:650,about:'Expert in floor and wall tiling with premium finishes.'},
+  {id:4,name:'Bipul Roy',skill:'Brick Mason',level:'Senior',exp:15,rating:4.7,location:'Udaipur',contact:'9801234567',available:true,rate:550,about:'Experienced in structural brickwork and boundary walls.'},
+  {id:5,name:'Tapas Deb',skill:'Cement Mason',level:'Junior',exp:3,rating:4.1,location:'Dharmanagar',contact:'9867890123',available:true,rate:450,about:'Concrete finishing and plastering specialist.'},
+  {id:6,name:'Manoj Paul',skill:'Carpenter',level:'Expert',exp:18,rating:5.0,location:'Agartala',contact:'9845678901',available:true,rate:750,about:'Custom furniture, door frames and wooden fixtures.'},
+  {id:7,name:'Dinesh Ghosh',skill:'Electrician',level:'Senior',exp:6,rating:4.4,location:'Udaipur',contact:'9823456789',available:false,rate:650,about:'Wiring, switchboard installation and solar panel setup.'},
+  {id:8,name:'Khokan Barman',skill:'Painter',level:'Junior',exp:2,rating:3.9,location:'Sabroom',contact:'9889012345',available:true,rate:400,about:'Interior and exterior painting with texture finishes.'},
+  {id:9,name:'Uttam Nath',skill:'Welder',level:'Expert',exp:10,rating:4.7,location:'Agartala',contact:'9856789012',available:true,rate:800,about:'Arc welding, gate fabrication and steel structure work.'},
+  {id:10,name:'Swarup Datta',skill:'Plumber',level:'Expert',exp:11,rating:4.5,location:'Sabroom',contact:'9878901234',available:true,rate:680,about:'Overhead tank installation, drainage and sanitary fittings.'},
+  // ── Heavy Vehicle & Machinery — Backhoe Loader Operator ──
+  {id:11,name:'Thepise',skill:'Backhoe Loader Operator',level:'Junior',exp:2,rating:4.0,location:'Nagaland',contact:'7085989146',available:true,rate:850,about:'Backhoe loader operator seeking placement support.'},
+  {id:12,name:'A Tiaba Sangtam',skill:'Backhoe Loader Operator',level:'Junior',exp:2,rating:4.0,location:'Nagaland',contact:'7005638192',available:true,rate:850,about:'Backhoe loader operator seeking placement support.'},
+  {id:13,name:'Limatoshi Ao',skill:'Backhoe Loader Operator',level:'Junior',exp:2,rating:4.0,location:'Nagaland',contact:'9612368481',available:true,rate:850,about:'Backhoe loader operator seeking placement support.'},
+  {id:14,name:'Chivete Pfuno',skill:'Backhoe Loader Operator',level:'Junior',exp:2,rating:4.0,location:'Nagaland',contact:'9366520567',available:true,rate:850,about:'Backhoe loader operator seeking placement support.'},
+  {id:15,name:'Shitoba',skill:'Backhoe Loader Operator',level:'Junior',exp:2,rating:4.0,location:'Nagaland',contact:'6009152589',available:true,rate:850,about:'Backhoe loader operator seeking placement support.'},
+  {id:16,name:'Limayanger',skill:'Backhoe Loader Operator',level:'Junior',exp:2,rating:4.0,location:'Nagaland',contact:'7630981651',available:true,rate:850,about:'Backhoe loader operator seeking placement support.'},
+  {id:17,name:'Kivipu Zhimomi',skill:'Backhoe Loader Operator',level:'Junior',exp:2,rating:4.0,location:'Nagaland',contact:'7005784530',available:true,rate:850,about:'Backhoe loader operator seeking placement support.'},
+  {id:18,name:'Tanghai',skill:'Backhoe Loader Operator',level:'Junior',exp:2,rating:4.0,location:'Nagaland',contact:'8414020173',available:true,rate:850,about:'Backhoe loader operator seeking placement support.'},
+  // ── Heavy Vehicle & Machinery — Track Excavator Operator ──
+  {id:19,name:'Yaphoa P Konyak',skill:'Track Excavator Operator',level:'Junior',exp:2,rating:4.0,location:'Nagaland',contact:'7085448001',available:true,rate:900,about:'Track excavator operator seeking placement support.'},
+  {id:20,name:'Mughaho Y Sumi',skill:'Track Excavator Operator',level:'Junior',exp:2,rating:4.0,location:'Nagaland',contact:'9862086137',available:true,rate:900,about:'Track excavator operator seeking placement support.'},
+  // ── Heavy Vehicle & Machinery — Tandem Road Roller Operator ──
+  {id:21,name:'S Kumrimong Yimchunger',skill:'Tandem Road Roller Operator',level:'Junior',exp:2,rating:4.0,location:'Nagaland',contact:'9383023699',available:true,rate:800,about:'Tandem road roller operator seeking placement support.'},
+  // ── Heavy Vehicle & Machinery — Tipper Truck Driver ──
+  {id:22,name:'Veluto Vese',skill:'Tipper Truck Driver',level:'Junior',exp:2,rating:4.0,location:'Nagaland',contact:'8787569351',available:true,rate:750,about:'Tipper truck driver seeking placement support.'},
+  {id:23,name:'Putukhrulu Movi',skill:'Tipper Truck Driver',level:'Junior',exp:2,rating:4.0,location:'Nagaland',contact:'8798117403',available:true,rate:750,about:'Tipper truck driver seeking placement support.'},
+  {id:24,name:'T Dilise Sangtam',skill:'Tipper Truck Driver',level:'Junior',exp:2,rating:4.0,location:'Nagaland',contact:'8787594788',available:true,rate:750,about:'Tipper truck driver seeking placement support.'},
+  // ── Heavy Vehicle & Machinery — Heavy Machinery Mechanic ──
+  {id:25,name:'L Longching Phom',skill:'Heavy Machinery Mechanic',level:'Junior',exp:2,rating:4.0,location:'Nagaland',contact:'8414968549',available:true,rate:800,about:'Heavy machinery mechanic seeking placement support.'},
+  {id:26,name:'Vikishe H Muru',skill:'Heavy Machinery Mechanic',level:'Junior',exp:2,rating:4.0,location:'Nagaland',contact:'9862143599',available:true,rate:800,about:'Heavy machinery mechanic seeking placement support.'},
+  {id:27,name:'B Tanghei',skill:'Heavy Machinery Mechanic',level:'Junior',exp:2,rating:4.0,location:'Nagaland',contact:'9362500801',available:true,rate:800,about:'Heavy machinery mechanic seeking placement support.'},
+  {id:28,name:'Manpuh Chuhwanglim',skill:'Heavy Machinery Mechanic',level:'Junior',exp:2,rating:4.0,location:'Nagaland',contact:'8414983625',available:true,rate:800,about:'Heavy machinery mechanic seeking placement support.'},
+  {id:29,name:'Watimongba Jamir',skill:'Heavy Machinery Mechanic',level:'Junior',exp:2,rating:4.0,location:'Nagaland',contact:'9615860160',available:true,rate:800,about:'Heavy machinery mechanic seeking placement support.'},
+  {id:30,name:'Sentiwapong',skill:'Heavy Machinery Mechanic',level:'Junior',exp:2,rating:4.0,location:'Nagaland',contact:'7005806075',available:true,rate:800,about:'Heavy machinery mechanic seeking placement support.'},
+  // ── Electrification & Plumbing — Zunheboto ──
+  {id:31,name:'Avikili Assumi',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Zunheboto',contact:'7005202616',available:true,rate:600,about:'Electrification and plumbing worker from Zunheboto seeking placement.'},
+  {id:32,name:'Hinoto Chishi',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Zunheboto',contact:'9362819929',available:true,rate:600,about:'Electrification and plumbing worker from Zunheboto seeking placement.'},
+  {id:33,name:'Hokevi Katty',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Zunheboto',contact:'9856835814',available:true,rate:600,about:'Electrification and plumbing worker from Zunheboto seeking placement.'},
+  {id:34,name:'Huska Chishi',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Zunheboto',contact:'9366353171',available:true,rate:600,about:'Electrification and plumbing worker from Zunheboto seeking placement.'},
+  {id:35,name:'Inokivi L Kiba',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Zunheboto',contact:'9863435701',available:true,rate:600,about:'Electrification and plumbing worker from Zunheboto seeking placement.'},
+  {id:36,name:'Kabuluto Kiba',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Zunheboto',contact:'8259080304',available:true,rate:600,about:'Electrification and plumbing worker from Zunheboto seeking placement.'},
+  {id:37,name:'Kibovi Kinimi',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Zunheboto',contact:'9863220310',available:true,rate:600,about:'Electrification and plumbing worker from Zunheboto seeking placement.'},
+  {id:38,name:'Mughato H Achumi',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Zunheboto',contact:'8787621703',available:true,rate:600,about:'Electrification and plumbing worker from Zunheboto seeking placement.'},
+  {id:39,name:'Nisuto T Yeptho',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Zunheboto',contact:'9383392806',available:true,rate:600,about:'Electrification and plumbing worker from Zunheboto seeking placement.'},
+  {id:40,name:'Niuto V Kiba',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Zunheboto',contact:'9863530355',available:true,rate:600,about:'Electrification and plumbing worker from Zunheboto seeking placement.'},
+  {id:41,name:'Niyeto M Awomi',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Zunheboto',contact:'8787473173',available:true,rate:600,about:'Electrification and plumbing worker from Zunheboto seeking placement.'},
+  {id:42,name:'Phukaho X Awomi',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Zunheboto',contact:'8731927818',available:true,rate:600,about:'Electrification and plumbing worker from Zunheboto seeking placement.'},
+  {id:43,name:'Shikato Awomi',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Zunheboto',contact:'8974990564',available:true,rate:600,about:'Electrification and plumbing worker from Zunheboto seeking placement.'},
+  {id:44,name:'Tohuvi Zhimo',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Zunheboto',contact:'7005665461',available:true,rate:600,about:'Electrification and plumbing worker from Zunheboto seeking placement.'},
+  {id:45,name:'Tokaho M Awomi',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Zunheboto',contact:'8131998477',available:true,rate:600,about:'Electrification and plumbing worker from Zunheboto seeking placement.'},
+  {id:46,name:'Toluho X Zhimo',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Zunheboto',contact:'9863665439',available:true,rate:600,about:'Electrification and plumbing worker from Zunheboto seeking placement.'},
+  {id:47,name:'Toto X Awomi',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Zunheboto',contact:'7629843872',available:true,rate:600,about:'Electrification and plumbing worker from Zunheboto seeking placement.'},
+  {id:48,name:'Tunavi K Achumi',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Zunheboto',contact:'7005822214',available:true,rate:600,about:'Electrification and plumbing worker from Zunheboto seeking placement.'},
+  {id:49,name:'Vicky Kiho',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Zunheboto',contact:'8415982721',available:true,rate:600,about:'Electrification and plumbing worker from Zunheboto seeking placement.'},
+  {id:50,name:'Vitolu K Zhimomi',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Zunheboto',contact:'9366005573',available:true,rate:600,about:'Electrification and plumbing worker from Zunheboto seeking placement.'},
+  {id:51,name:'Viyikhu G Zhimo',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Zunheboto',contact:'7005652751',available:true,rate:600,about:'Electrification and plumbing worker from Zunheboto seeking placement.'},
+  {id:52,name:'Xukivi V Sumi',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Zunheboto',contact:'8730010320',available:true,rate:600,about:'Electrification and plumbing worker from Zunheboto seeking placement.'},
+  {id:53,name:'Vito V Yepthomi',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Zunheboto',contact:'9362367256',available:true,rate:600,about:'Electrification and plumbing worker from Zunheboto seeking placement.'},
+  // ── Electrification & Plumbing — Tseminyu ──
+  {id:54,name:'Agwahi Kent',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Tseminyu',contact:'8731054055',available:true,rate:600,about:'Electrification and plumbing worker from Tseminyu seeking placement.'},
+  {id:55,name:'Benchu Kath',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Tseminyu',contact:'9366183474',available:true,rate:600,about:'Electrification and plumbing worker from Tseminyu seeking placement.'},
+  {id:56,name:'Benti Tep',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Tseminyu',contact:'6009263012',available:true,rate:600,about:'Electrification and plumbing worker from Tseminyu seeking placement.'},
+  {id:57,name:'Benwachu Semy',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Tseminyu',contact:'9863493612',available:true,rate:600,about:'Electrification and plumbing worker from Tseminyu seeking placement.'},
+  {id:58,name:'Chakeya Magh',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Tseminyu',contact:'8014527992',available:true,rate:600,about:'Electrification and plumbing worker from Tseminyu seeking placement.'},
+  {id:59,name:'Chanwamo Magh',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Tseminyu',contact:'7005782101',available:true,rate:600,about:'Electrification and plumbing worker from Tseminyu seeking placement.'},
+  {id:60,name:'Francis Tep',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Tseminyu',contact:'9798152041',available:true,rate:600,about:'Electrification and plumbing worker from Tseminyu seeking placement.'},
+  {id:61,name:'Jethanglo Magh',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Tseminyu',contact:'9392031083',available:true,rate:600,about:'Electrification and plumbing worker from Tseminyu seeking placement.'},
+  {id:62,name:'Jewathang Magh',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Tseminyu',contact:'9863207632',available:true,rate:600,about:'Electrification and plumbing worker from Tseminyu seeking placement.'},
+  {id:63,name:'Jeyalo Kent',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Tseminyu',contact:'7085120341',available:true,rate:600,about:'Electrification and plumbing worker from Tseminyu seeking placement.'},
+  {id:64,name:'Kenyuseng Tep',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Tseminyu',contact:'7085887929',available:true,rate:600,about:'Electrification and plumbing worker from Tseminyu seeking placement.'},
+  {id:65,name:'Luqheto Wotsa',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Tseminyu',contact:'8974716650',available:true,rate:600,about:'Electrification and plumbing worker from Tseminyu seeking placement.'},
+  {id:66,name:'Nenphalo Tep',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Tseminyu',contact:'9863418359',available:true,rate:600,about:'Electrification and plumbing worker from Tseminyu seeking placement.'},
+  {id:67,name:'Ruchuhyun Jemu',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Tseminyu',contact:'8131060460',available:true,rate:600,about:'Electrification and plumbing worker from Tseminyu seeking placement.'},
+  {id:68,name:'Senchu Seb',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Tseminyu',contact:'8014456337',available:true,rate:600,about:'Electrification and plumbing worker from Tseminyu seeking placement.'},
+  {id:69,name:'Shalo Tep',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Tseminyu',contact:'8787701219',available:true,rate:600,about:'Electrification and plumbing worker from Tseminyu seeking placement.'},
+  {id:70,name:'Soti Seb',skill:'Electrification & Plumbing',level:'Junior',exp:2,rating:4.0,location:'Tseminyu',contact:'8798450822',available:true,rate:600,about:'Electrification and plumbing worker from Tseminyu seeking placement.'},
 ];
-let orders=[],cart=[],nextWId=11,nextOId=1001;
+let orders=[],cart=[],nextWId=71,nextOId=1001;
 
 function addToCart(id){
   if(cart.find(c=>c.id===id)){toast('Already in cart','err');return;}
@@ -863,7 +940,7 @@ function delWorker(id){
   workers=workers.filter(w=>w.id!==id);renderAdminWorkers();toast('Worker removed');
 }
 
-const SKILLS_LIST=['Electrician','Plumber','Tile Mason','Brick Mason','Cement Mason','Carpenter','Painter','Welder'];
+const SKILLS_LIST=['Electrician','Plumber','Tile Mason','Brick Mason','Cement Mason','Carpenter','Painter','Welder','Backhoe Loader Operator','Track Excavator Operator','Tandem Road Roller Operator','Tipper Truck Driver','Heavy Machinery Mechanic','Electrification & Plumbing'];
 const LEVELS_LIST=['Junior','Senior','Expert'];
 
 function openAddForm(id){
@@ -881,9 +958,9 @@ function openAddForm(id){
         <div class="fcard">
           <div class="fcard-head">Personal info</div>
           <div class="fcard-body">
-            <div class="fg"><label>Full name <span class="req">*</span></label><input class="fi" id="wName" value="${w?.name||''}" placeholder="e.g. John Doe"></div>
+            <div class="fg"><label>Full name <span class="req">*</span></label><input class="fi" id="wName" value="${w?.name||''}" placeholder="e.g. Rajesh Kumar"></div>
             <div class="fg"><label>Contact number <span class="req">*</span></label><input class="fi" id="wContact" value="${w?.contact||''}" placeholder="10-digit mobile" maxlength="10"></div>
-            <div class="fg"><label>Location / City <span class="req">*</span></label><input class="fi" id="wLocation" value="${w?.location||''}" placeholder="e.g. Kohima"></div>
+            <div class="fg"><label>Location / City <span class="req">*</span></label><input class="fi" id="wLocation" value="${w?.location||''}" placeholder="e.g. Agartala"></div>
             <div class="fg"><label>About / Bio</label><textarea class="fi" id="wAbout" placeholder="Brief description…">${w?.about||''}</textarea></div>
           </div>
         </div>
