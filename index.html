@@ -1,10 +1,140 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Hire Worker</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+  <title>Hire Worker</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+    .card {
+      background: white;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 10px;
+    }
+    button {
+      padding: 8px 12px;
+      border: none;
+      background: black;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 8px;
+      margin: 5px 0;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>Hire Workers</h1>
+
+<!-- FILTER -->
+<select id="locationFilter" onchange="filterWorkers()">
+  <option value="all">All Locations</option>
+  <option>Dimapur</option>
+  <option>Kohima</option>
+  <option>Mokokchung</option>
+</select>
+
+<div id="workers"></div>
+
+<h2>Cart</h2>
+<div id="cart"></div>
+<p><b>Total: ₹<span id="total">0</span></b></p>
+
+<h2>Checkout</h2>
+<input id="name" placeholder="Name">
+<input id="phone" placeholder="Phone">
+<textarea id="address" placeholder="Address"></textarea>
+
+<button onclick="placeOrder()">Place Order</button>
+
+<script>
+const workers = [
+  {id:1,name:"Alem",location:"Dimapur",skill:"Electrician",price:1200},
+  {id:2,name:"Imkong",location:"Kohima",skill:"Plumber",price:1000},
+  {id:3,name:"Senti",location:"Dimapur",skill:"Tile Mason",price:1500},
+  {id:4,name:"Walling",location:"Mokokchung",skill:"Mason",price:1600}
+];
+
+let cart = [];
+
+function renderWorkers(list){
+  const container = document.getElementById("workers");
+  container.innerHTML = "";
+
+  list.forEach(w => {
+    container.innerHTML += `
+      <div class="card">
+        <b>${w.name}</b><br>
+        ${w.skill} • ${w.location}<br>
+        ₹${w.price}<br><br>
+        <button onclick="addToCart(${w.id})">Add</button>
+      </div>
+    `;
+  });
+}
+
+function addToCart(id){
+  const worker = workers.find(w => w.id === id);
+  cart.push(worker);
+  renderCart();
+}
+
+function renderCart(){
+  const container = document.getElementById("cart");
+  container.innerHTML = "";
+  let total = 0;
+
+  cart.forEach((item, i) => {
+    total += item.price;
+    container.innerHTML += `
+      <div class="card">
+        ${item.name} - ₹${item.price}
+        <button onclick="removeItem(${i})">Remove</button>
+      </div>
+    `;
+  });
+
+  document.getElementById("total").innerText = total;
+}
+
+function removeItem(i){
+  cart.splice(i,1);
+  renderCart();
+}
+
+function filterWorkers(){
+  const loc = document.getElementById("locationFilter").value;
+  if(loc === "all"){
+    renderWorkers(workers);
+  } else {
+    renderWorkers(workers.filter(w => w.location === loc));
+  }
+}
+
+function placeOrder(){
+  const name = document.getElementById("name").value;
+  const phone = document.getElementById("phone").value;
+
+  if(!name || !phone || cart.length === 0){
+    alert("Fill details and add workers");
+    return;
+  }
+
+  alert("Order placed! Manager will contact you.");
+  cart = [];
+  renderCart();
+}
+
+renderWorkers(workers);
+</script>
+
+</body>
 </html>
