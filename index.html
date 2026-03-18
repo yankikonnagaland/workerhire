@@ -1,159 +1,1032 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Hire Workers</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WorkHire — Skilled Workers On Demand</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0e0e;
+    --surface: #161616;
+    --surface2: #1f1f1f;
+    --border: #2a2a2a;
+    --accent: #f5a623;
+    --accent2: #e8612c;
+    --text: #f0ede8;
+    --muted: #7a7670;
+    --success: #4caf72;
+    --danger: #e85c4a;
+    --card-bg: #191919;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  h1,h2,h3,h4 { font-family: 'Syne', sans-serif; }
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 32px;
+    background: rgba(14,14,14,.92);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+  }
+  .logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1.4rem; letter-spacing:-.5px; }
+  .logo span { color: var(--accent); }
+  .nav-tabs { display:flex; gap:4px; }
+  .nav-tab {
+    padding:7px 16px; border-radius:6px; cursor:pointer;
+    font-family:'Syne',sans-serif; font-weight:600; font-size:.82rem;
+    letter-spacing:.3px; text-transform:uppercase; border:none;
+    background:transparent; color:var(--muted); transition:all .2s;
+  }
+  .nav-tab:hover { color:var(--text); background:var(--surface2); }
+  .nav-tab.active { background:var(--accent); color:#000; }
+  .cart-btn {
+    display:flex; align-items:center; gap:8px;
+    padding:8px 18px; border-radius:8px;
+    background:var(--surface2); border:1px solid var(--border);
+    color:var(--text); cursor:pointer; font-family:'Syne',sans-serif;
+    font-weight:600; font-size:.85rem; transition:all .2s;
+  }
+  .cart-btn:hover { border-color:var(--accent); color:var(--accent); }
+  .cart-count {
+    background:var(--accent); color:#000; border-radius:50%;
+    width:20px; height:20px; font-size:.7rem; font-weight:800;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .page { display:none; animation: fadeIn .3s ease; }
+  .page.active { display:block; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+  .hero {
+    padding: 72px 32px 48px;
+    background: linear-gradient(135deg, #0e0e0e 0%, #1a1208 50%, #0e0e0e 100%);
+    position: relative; overflow: hidden;
+    text-align: center;
+  }
+  .hero::before {
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(245,166,35,.12), transparent);
+  }
+  .hero-label {
+    display:inline-block; padding:4px 14px; border-radius:20px;
+    background:rgba(245,166,35,.12); border:1px solid rgba(245,166,35,.3);
+    color:var(--accent); font-size:.75rem; font-family:'Syne',sans-serif;
+    font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:20px;
+  }
+  .hero h1 { font-size:clamp(2.2rem,5vw,3.8rem); font-weight:800; line-height:1.1; margin-bottom:16px; }
+  .hero h1 em { font-style:normal; color:var(--accent); }
+  .hero p { color:var(--muted); font-size:1.05rem; max-width:520px; margin:0 auto 36px; line-height:1.7; }
+  .filter-bar {
+    display:flex; gap:12px; align-items:center; flex-wrap:wrap; justify-content:center;
+    padding:0 32px 40px; position:relative; z-index:1;
+  }
+  .filter-select, .filter-input {
+    padding:11px 16px; border-radius:8px;
+    background:var(--surface2); border:1px solid var(--border);
+    color:var(--text); font-family:'DM Sans',sans-serif; font-size:.9rem;
+    outline:none; transition:border-color .2s; min-width:160px;
+  }
+  .filter-select:focus, .filter-input:focus { border-color:var(--accent); }
+  .filter-select option { background:var(--surface2); }
+  .filter-btn {
+    padding:11px 24px; border-radius:8px;
+    background:var(--accent); border:none; color:#000;
+    font-family:'Syne',sans-serif; font-weight:700; font-size:.9rem;
+    cursor:pointer; transition:opacity .2s;
+  }
+  .filter-btn:hover { opacity:.85; }
+  .section { padding:32px; }
+  .section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; }
+  .section-title { font-size:1.3rem; font-weight:700; }
+  .results-count { color:var(--muted); font-size:.85rem; }
+  .workers-grid {
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap:20px;
+  }
+  .worker-card {
+    background:var(--card-bg); border:1px solid var(--border);
+    border-radius:14px; overflow:hidden; transition:all .25s;
+    position:relative;
+  }
+  .worker-card:hover { border-color:rgba(245,166,35,.4); transform:translateY(-3px); box-shadow:0 12px 40px rgba(0,0,0,.4); }
+  .worker-card-top { padding:20px; display:flex; gap:14px; align-items:flex-start; }
+  .worker-avatar {
+    width:56px; height:56px; border-radius:12px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.5rem; flex-shrink:0; font-weight:700;
+  }
+  .worker-info { flex:1; min-width:0; }
+  .worker-name { font-family:'Syne',sans-serif; font-weight:700; font-size:1rem; margin-bottom:3px; }
+  .worker-skill {
+    display:inline-block; padding:2px 10px; border-radius:4px;
+    font-size:.72rem; font-weight:600; letter-spacing:.5px; text-transform:uppercase;
+    background:rgba(245,166,35,.1); color:var(--accent); border:1px solid rgba(245,166,35,.2);
+    margin-bottom:6px;
+  }
+  .worker-loc { color:var(--muted); font-size:.8rem; }
+  .avail-badge {
+    position:absolute; top:14px; right:14px;
+    padding:3px 9px; border-radius:4px; font-size:.7rem; font-weight:700;
+  }
+  .avail-badge.available { background:rgba(76,175,114,.15); color:var(--success); border:1px solid rgba(76,175,114,.3); }
+  .avail-badge.busy { background:rgba(232,92,74,.12); color:var(--danger); border:1px solid rgba(232,92,74,.25); }
+  .worker-stats {
+    display:grid; grid-template-columns:1fr 1fr 1fr;
+    gap:0; border-top:1px solid var(--border);
+  }
+  .stat { padding:12px; text-align:center; border-right:1px solid var(--border); }
+  .stat:last-child { border-right:none; }
+  .stat-val { font-family:'Syne',sans-serif; font-weight:700; font-size:1rem; color:var(--accent); }
+  .stat-key { font-size:.68rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-top:2px; }
+  .worker-card-foot { padding:14px 20px; border-top:1px solid var(--border); display:flex; gap:10px; }
+  .btn-add {
+    flex:1; padding:9px; border-radius:8px;
+    background:var(--accent); border:none; color:#000;
+    font-family:'Syne',sans-serif; font-weight:700; font-size:.85rem;
+    cursor:pointer; transition:opacity .2s;
+  }
+  .btn-add:hover { opacity:.85; }
+  .btn-add:disabled { background:var(--surface2); color:var(--muted); cursor:not-allowed; opacity:1; }
+  .btn-view {
+    padding:9px 14px; border-radius:8px;
+    background:transparent; border:1px solid var(--border);
+    color:var(--muted); font-family:'Syne',sans-serif; font-weight:600; font-size:.82rem;
+    cursor:pointer; transition:all .2s;
+  }
+  .btn-view:hover { border-color:var(--text); color:var(--text); }
+  .stars { color:var(--accent); font-size:.8rem; }
+  .cart-layout { display:grid; grid-template-columns:1fr 360px; gap:24px; padding:32px; align-items:start; }
+  @media(max-width:900px) { .cart-layout { grid-template-columns:1fr; } }
+  .cart-list { display:flex; flex-direction:column; gap:14px; }
+  .cart-item {
+    background:var(--card-bg); border:1px solid var(--border);
+    border-radius:12px; padding:18px; display:flex; align-items:center; gap:16px;
+  }
+  .cart-item-avatar {
+    width:48px; height:48px; border-radius:10px;
+    display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0;
+  }
+  .cart-item-info { flex:1; }
+  .cart-item-name { font-family:'Syne',sans-serif; font-weight:700; font-size:.95rem; }
+  .cart-item-sub { color:var(--muted); font-size:.8rem; margin-top:2px; }
+  .cart-item-days { display:flex; align-items:center; gap:8px; }
+  .days-input {
+    width:64px; padding:6px 10px; border-radius:6px;
+    background:var(--surface2); border:1px solid var(--border);
+    color:var(--text); font-size:.85rem; text-align:center;
+  }
+  .btn-remove {
+    padding:6px 12px; border-radius:6px;
+    background:rgba(232,92,74,.1); border:1px solid rgba(232,92,74,.2);
+    color:var(--danger); cursor:pointer; font-size:.8rem; font-family:'Syne',sans-serif; font-weight:600;
+    transition:all .2s;
+  }
+  .btn-remove:hover { background:rgba(232,92,74,.2); }
+  .order-summary {
+    background:var(--card-bg); border:1px solid var(--border);
+    border-radius:14px; padding:24px; position:sticky; top:80px;
+  }
+  .order-summary h3 { font-size:1.1rem; font-weight:700; margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid var(--border); }
+  .summary-row { display:flex; justify-content:space-between; margin-bottom:12px; font-size:.9rem; }
+  .summary-row.total { padding-top:16px; border-top:1px solid var(--border); font-family:'Syne',sans-serif; font-weight:700; font-size:1.05rem; color:var(--accent); }
+  .form-group { margin-bottom:14px; }
+  .form-label { display:block; font-size:.78rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; }
+  .form-input {
+    width:100%; padding:10px 14px; border-radius:8px;
+    background:var(--surface2); border:1px solid var(--border);
+    color:var(--text); font-family:'DM Sans',sans-serif; font-size:.9rem;
+    outline:none; transition:border-color .2s;
+  }
+  .form-input:focus { border-color:var(--accent); }
+  .btn-order {
+    width:100%; padding:13px; border-radius:10px;
+    background:var(--accent); border:none; color:#000;
+    font-family:'Syne',sans-serif; font-weight:800; font-size:1rem;
+    cursor:pointer; margin-top:16px; transition:opacity .2s;
+  }
+  .btn-order:hover { opacity:.85; }
+  .empty-cart { text-align:center; padding:80px 32px; color:var(--muted); }
+  .empty-cart .icon { font-size:3rem; margin-bottom:16px; }
+  .empty-cart h3 { font-size:1.2rem; color:var(--text); margin-bottom:8px; }
+  .admin-layout { display:grid; grid-template-columns:280px 1fr; gap:0; min-height:calc(100vh - 57px); }
+  .admin-sidebar {
+    background:var(--surface); border-right:1px solid var(--border);
+    padding:24px 16px;
+  }
+  .admin-sidebar h3 { font-size:.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; padding:0 8px; }
+  .sidebar-item {
+    display:flex; align-items:center; gap:10px;
+    padding:10px 12px; border-radius:8px; cursor:pointer;
+    font-weight:500; color:var(--muted); transition:all .2s; margin-bottom:2px;
+  }
+  .sidebar-item:hover { background:var(--surface2); color:var(--text); }
+  .sidebar-item.active { background:rgba(245,166,35,.1); color:var(--accent); border:1px solid rgba(245,166,35,.2); }
+  .admin-main { padding:28px; }
+  .admin-main h2 { font-size:1.4rem; font-weight:800; margin-bottom:8px; }
+  .admin-subtitle { color:var(--muted); font-size:.88rem; margin-bottom:28px; }
+  .stats-cards { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:28px; }
+  @media(max-width:900px) { .stats-cards { grid-template-columns:repeat(2,1fr); } }
+  .stat-card {
+    background:var(--card-bg); border:1px solid var(--border);
+    border-radius:12px; padding:18px;
+  }
+  .stat-card-val { font-family:'Syne',sans-serif; font-size:2rem; font-weight:800; color:var(--accent); }
+  .stat-card-label { color:var(--muted); font-size:.8rem; margin-top:4px; }
+  .admin-table-wrap { background:var(--card-bg); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
+  .admin-table-header {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 20px; border-bottom:1px solid var(--border);
+  }
+  .admin-table-header h3 { font-size:1rem; font-weight:700; }
+  .btn-add-worker {
+    padding:8px 18px; border-radius:8px;
+    background:var(--accent); border:none; color:#000;
+    font-family:'Syne',sans-serif; font-weight:700; font-size:.82rem;
+    cursor:pointer; transition:opacity .2s;
+  }
+  .btn-add-worker:hover { opacity:.85; }
+  table { width:100%; border-collapse:collapse; }
+  th {
+    padding:11px 16px; text-align:left;
+    font-size:.72rem; text-transform:uppercase; letter-spacing:.8px;
+    color:var(--muted); font-weight:600; background:var(--surface2);
+    border-bottom:1px solid var(--border);
+  }
+  td { padding:13px 16px; border-bottom:1px solid rgba(42,42,42,.5); font-size:.88rem; }
+  tr:last-child td { border-bottom:none; }
+  tr:hover td { background:rgba(255,255,255,.015); }
+  .td-name { font-weight:600; }
+  .skill-tag {
+    display:inline-block; padding:2px 9px; border-radius:4px; font-size:.7rem; font-weight:600;
+    background:rgba(245,166,35,.1); color:var(--accent); border:1px solid rgba(245,166,35,.2);
+  }
+  .level-badge {
+    display:inline-block; padding:2px 9px; border-radius:4px; font-size:.7rem; font-weight:600;
+  }
+  .level-expert { background:rgba(76,175,114,.1); color:#4caf72; }
+  .level-senior { background:rgba(100,149,237,.1); color:#6495ed; }
+  .level-junior { background:rgba(255,165,0,.1); color:orange; }
+  .action-btns { display:flex; gap:6px; }
+  .btn-edit, .btn-del {
+    padding:5px 11px; border-radius:6px; font-size:.75rem; font-weight:600;
+    cursor:pointer; border:1px solid; transition:all .2s; font-family:'Syne',sans-serif;
+  }
+  .btn-edit { background:transparent; border-color:var(--border); color:var(--muted); }
+  .btn-edit:hover { color:var(--text); border-color:var(--text); }
+  .btn-del { background:transparent; border-color:rgba(232,92,74,.25); color:var(--danger); }
+  .btn-del:hover { background:rgba(232,92,74,.1); }
+  .orders-list { display:flex; flex-direction:column; gap:14px; }
+  .order-card {
+    background:var(--card-bg); border:1px solid var(--border);
+    border-radius:12px; padding:18px;
+  }
+  .order-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; }
+  .order-id { font-family:'Syne',sans-serif; font-weight:800; color:var(--accent); }
+  .order-status {
+    padding:4px 12px; border-radius:4px; font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px;
+  }
+  .status-new { background:rgba(245,166,35,.15); color:var(--accent); }
+  .status-processing { background:rgba(100,149,237,.12); color:#6495ed; }
+  .status-dispatched { background:rgba(76,175,114,.12); color:var(--success); }
+  .order-workers { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+  .order-customer { color:var(--muted); font-size:.85rem; }
+  .btn-dispatch {
+    padding:7px 16px; border-radius:7px;
+    background:rgba(76,175,114,.1); border:1px solid rgba(76,175,114,.3);
+    color:var(--success); font-family:'Syne',sans-serif; font-weight:700; font-size:.8rem;
+    cursor:pointer; transition:all .2s;
+  }
+  .btn-dispatch:hover { background:rgba(76,175,114,.2); }
+  .modal-overlay {
+    display:none; position:fixed; inset:0; z-index:200;
+    background:rgba(0,0,0,.7); backdrop-filter:blur(4px);
+    align-items:center; justify-content:center; padding:24px;
+  }
+  .modal-overlay.open { display:flex; }
+  .modal {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:16px; padding:28px; width:100%; max-width:540px;
+    max-height:90vh; overflow-y:auto;
+    animation: fadeIn .25s ease;
+  }
+  .modal h3 { font-size:1.2rem; font-weight:800; margin-bottom:20px; }
+  .modal-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media(max-width:520px) { .modal-grid { grid-template-columns:1fr; } }
+  .modal-footer { display:flex; gap:10px; justify-content:flex-end; margin-top:20px; padding-top:20px; border-top:1px solid var(--border); }
+  .btn-cancel {
+    padding:9px 20px; border-radius:8px;
+    background:transparent; border:1px solid var(--border);
+    color:var(--muted); cursor:pointer; font-family:'Syne',sans-serif; font-weight:600;
+  }
+  .btn-save {
+    padding:9px 24px; border-radius:8px;
+    background:var(--accent); border:none; color:#000;
+    font-family:'Syne',sans-serif; font-weight:700; cursor:pointer;
+  }
+  .toast {
+    position:fixed; bottom:28px; right:28px; z-index:999;
+    padding:13px 20px; border-radius:10px;
+    background:var(--surface2); border:1px solid var(--border);
+    font-size:.88rem; font-weight:500; box-shadow:0 8px 32px rgba(0,0,0,.4);
+    transform:translateY(80px); opacity:0; transition:all .3s;
+  }
+  .toast.show { transform:translateY(0); opacity:1; }
+  .toast.success { border-color:rgba(76,175,114,.4); color:var(--success); }
+  .toast.error { border-color:rgba(232,92,74,.4); color:var(--danger); }
+  .success-screen { text-align:center; padding:80px 32px; }
+  .success-screen .check { font-size:4rem; margin-bottom:24px; }
+  .success-screen h2 { font-size:1.8rem; font-weight:800; margin-bottom:12px; }
+  .success-screen p { color:var(--muted); max-width:400px; margin:0 auto 28px; line-height:1.7; }
+  ::-webkit-scrollbar { width:6px; }
+  ::-webkit-scrollbar-track { background:var(--bg); }
+  ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+</style>
 </head>
+<body>
 
-<body class="bg-gray-100">
-
-<div class="max-w-6xl mx-auto p-6">
-
-  <!-- HEADER -->
-  <div class="bg-white p-6 rounded-2xl shadow mb-6 flex justify-between items-center">
-    <div>
-      <h1 class="text-2xl font-bold">Hire Workers</h1>
-      <p class="text-gray-500 text-sm">Find electricians, plumbers and more</p>
-    </div>
-    <div class="bg-gray-100 px-4 py-2 rounded-xl">
-      Cart: ₹<span id="total">0</span>
-    </div>
+<nav>
+  <div class="logo">Work<span>Hire</span></div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('home')">Find Workers</button>
+    <button class="nav-tab" onclick="showPage('admin')">Admin Panel</button>
   </div>
+  <button class="cart-btn" onclick="showPage('cart')">
+    🛒 Cart <span class="cart-count" id="cartCount">0</span>
+  </button>
+</nav>
 
-  <!-- FILTER -->
-  <div class="bg-white p-4 rounded-2xl shadow mb-6 flex gap-4">
-    <select id="locationFilter" class="border p-2 rounded-lg" onchange="filterWorkers()">
-      <option value="all">All Locations</option>
-      <option>Dimapur</option>
-      <option>Kohima</option>
-      <option>Mokokchung</option>
-    </select>
-
-    <select id="skillFilter" class="border p-2 rounded-lg" onchange="filterWorkers()">
-      <option value="all">All Skills</option>
+<div id="page-home" class="page active">
+  <div class="hero">
+    <div class="hero-label">⚡ On-Demand Skilled Workers</div>
+    <h1>Hire the <em>Right Expert</em><br>for Any Job</h1>
+    <p>Electricians, plumbers, masons, and more — vetted, rated, and ready to work at your location.</p>
+  </div>
+  <div class="filter-bar">
+    <input type="text" class="filter-input" id="filterLocation" placeholder="📍 Enter your city / area" oninput="applyFilters()">
+    <select class="filter-select" id="filterSkill" onchange="applyFilters()">
+      <option value="">All Skills</option>
       <option>Electrician</option>
       <option>Plumber</option>
       <option>Tile Mason</option>
-      <option>Mason</option>
+      <option>Brick Mason</option>
+      <option>Cement Mason</option>
+      <option>Carpenter</option>
+      <option>Painter</option>
+      <option>Welder</option>
     </select>
+    <select class="filter-select" id="filterAvail" onchange="applyFilters()">
+      <option value="">All Availability</option>
+      <option value="Available">Available Now</option>
+      <option value="Busy">Busy</option>
+    </select>
+    <select class="filter-select" id="filterLevel" onchange="applyFilters()">
+      <option value="">All Levels</option>
+      <option>Expert</option>
+      <option>Senior</option>
+      <option>Junior</option>
+    </select>
+    <button class="filter-btn" onclick="applyFilters()">Search</button>
   </div>
-
-  <div class="grid grid-cols-3 gap-6">
-
-    <!-- WORKERS -->
-    <div class="col-span-2 space-y-4" id="workers"></div>
-
-    <!-- CART -->
-    <div class="bg-white p-4 rounded-2xl shadow">
-      <h2 class="font-bold mb-3">Cart</h2>
-      <div id="cart"></div>
-
-      <div class="mt-4 font-bold">
-        Total: ₹<span id="total2">0</span>
-      </div>
-
-      <!-- CHECKOUT -->
-      <div class="mt-4 border-t pt-4">
-        <input id="name" placeholder="Name" class="w-full border p-2 rounded mb-2">
-        <input id="phone" placeholder="Phone" class="w-full border p-2 rounded mb-2">
-        <textarea id="address" placeholder="Address" class="w-full border p-2 rounded mb-2"></textarea>
-
-        <button onclick="placeOrder()" class="w-full bg-black text-white p-2 rounded-lg">
-          Place Order
-        </button>
-      </div>
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title">Available Workers</h2>
+      <span class="results-count" id="resultsCount">Loading…</span>
     </div>
-
+    <div class="workers-grid" id="workersGrid"></div>
   </div>
 </div>
 
+<div id="page-cart" class="page">
+  <div id="cartContent"></div>
+</div>
+
+<div id="page-admin" class="page">
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <h3>Management</h3>
+      <div class="sidebar-item active" onclick="adminTab('workers',this)">👷 Workers</div>
+      <div class="sidebar-item" onclick="adminTab('orders',this)">📦 Orders</div>
+      <div class="sidebar-item" onclick="adminTab('stats',this)">📊 Overview</div>
+    </aside>
+    <div class="admin-main" id="adminMain"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal" id="modal">
+    <h3 id="modalTitle">Worker Details</h3>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
-const workers = [
-  {id:1,name:"Alem",location:"Dimapur",skill:"Electrician",price:1200},
-  {id:2,name:"Imkong",location:"Kohima",skill:"Plumber",price:1000},
-  {id:3,name:"Senti",location:"Dimapur",skill:"Tile Mason",price:1500},
-  {id:4,name:"Walling",location:"Mokokchung",skill:"Mason",price:1600}
+const SKILL_COLORS = {
+  'Electrician':   ['#fff3cd','#856404','⚡'],
+  'Plumber':       ['#cfe2ff','#0c4a6e','🔧'],
+  'Tile Mason':    ['#d1e7dd','#0f5132','🪟'],
+  'Brick Mason':   ['#f8d7da','#721c24','🧱'],
+  'Cement Mason':  ['#e2e3e5','#41464b','🏗️'],
+  'Carpenter':     ['#fff0e0','#7a3500','🪚'],
+  'Painter':       ['#f0d9ff','#4a0080','🎨'],
+  'Welder':        ['#fde68a','#78350f','🔥'],
+};
+function getAvatarStyle(skill) {
+  const c = SKILL_COLORS[skill] || ['#2a2a2a','#aaa','🔨'];
+  return `background:${c[0]}22; color:${c[1] || c[0]}`;
+}
+function getEmoji(skill) { return (SKILL_COLORS[skill]||['','','🔨'])[2]; }
+function starsHTML(r) { return '★'.repeat(Math.round(r))+'☆'.repeat(5-Math.round(r)); }
+function levelClass(l) { return l==='Expert'?'level-expert':l==='Senior'?'level-senior':'level-junior'; }
+
+let workers = [
+  {id:1, name:'Rajesh Kumar',   skill:'Electrician',  level:'Expert', exp:12, rating:4.8, location:'Agartala',  contact:'9876543210', available:true,  rate:700, about:'Certified wireman with 12 years of residential & commercial experience.'},
+  {id:2, name:'Sunil Das',      skill:'Plumber',       level:'Senior', exp:7,  rating:4.6, location:'Agartala',  contact:'9812345678', available:true,  rate:600, about:'Specialises in pipe fitting, leak repair and bathroom installations.'},
+  {id:3, name:'Anil Saha',      skill:'Tile Mason',    level:'Expert', exp:9,  rating:4.9, location:'Agartala',  contact:'9834567890', available:false, rate:650, about:'Expert in floor and wall tiling with premium finishes.'},
+  {id:4, name:'Bipul Roy',      skill:'Brick Mason',   level:'Senior', exp:15, rating:4.7, location:'Udaipur',   contact:'9801234567', available:true,  rate:550, about:'Experienced in structural brickwork and boundary walls.'},
+  {id:5, name:'Tapas Deb',      skill:'Cement Mason',  level:'Junior', exp:3,  rating:4.1, location:'Dharmanagar', contact:'9867890123', available:true,  rate:450, about:'Concrete finishing and plastering specialist.'},
+  {id:6, name:'Manoj Paul',     skill:'Carpenter',     level:'Expert', exp:18, rating:5.0, location:'Agartala',  contact:'9845678901', available:true,  rate:750, about:'Custom furniture, door frames and wooden fixtures.'},
+  {id:7, name:'Dinesh Ghosh',   skill:'Electrician',   level:'Senior', exp:6,  rating:4.4, location:'Udaipur',   contact:'9823456789', available:false, rate:650, about:'Wiring, switchboard installation and solar panel setup.'},
+  {id:8, name:'Khokan Barman',  skill:'Painter',       level:'Junior', exp:2,  rating:3.9, location:'Sabroom',   contact:'9889012345', available:true,  rate:400, about:'Interior and exterior painting with texture finishes.'},
+  {id:9, name:'Uttam Nath',     skill:'Welder',        level:'Expert', exp:10, rating:4.7, location:'Agartala',  contact:'9856789012', available:true,  rate:800, about:'Arc welding, gate fabrication and steel structure work.'},
+  {id:10,name:'Swarup Datta',   skill:'Plumber',       level:'Expert', exp:11, rating:4.5, location:'Sabroom',   contact:'9878901234', available:true,  rate:680, about:'Overhead tank installation, drainage and sanitary fittings.'},
 ];
 
+let orders = [];
 let cart = [];
+let nextWorkerId = 11;
+let nextOrderId = 1001;
 
-function renderWorkers(list){
-  const container = document.getElementById("workers");
-  container.innerHTML = "";
+function addToCart(id) {
+  if (cart.find(c=>c.id===id)) { showToast('Already in cart','error'); return; }
+  const w = workers.find(w=>w.id===id);
+  if (!w) return;
+  cart.push({ ...w, days: 1 });
+  updateCartCount();
+  showToast(`${w.name} added to cart ✓`,'success');
+  renderGrid();
+}
+function removeFromCart(id) {
+  cart = cart.filter(c=>c.id!==id);
+  updateCartCount(); renderCart();
+}
+function updateCartCount() {
+  document.getElementById('cartCount').textContent = cart.length;
+}
+function updateDays(id, val) {
+  const item = cart.find(c=>c.id===id);
+  if (item) item.days = Math.max(1, parseInt(val)||1);
+  renderCart();
+}
 
-  list.forEach(w => {
-    container.innerHTML += `
-      <div class="bg-white p-4 rounded-xl shadow flex justify-between items-center">
-        <div>
-          <div class="font-bold text-lg">${w.name}</div>
-          <div class="text-gray-500 text-sm">${w.skill} • ${w.location}</div>
+function showPage(p) {
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(el=>el.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.querySelectorAll('.nav-tab')[p==='home'?0:1]?.classList.add('active');
+  if (p==='home') renderGrid();
+  if (p==='cart') renderCart();
+  if (p==='admin') { renderAdminWorkers(); }
+}
+
+function applyFilters() { renderGrid(); }
+
+function renderGrid() {
+  const loc   = document.getElementById('filterLocation')?.value.toLowerCase()||'';
+  const skill = document.getElementById('filterSkill')?.value||'';
+  const avail = document.getElementById('filterAvail')?.value||'';
+  const level = document.getElementById('filterLevel')?.value||'';
+  let filtered = workers.filter(w => {
+    if (loc   && !w.location.toLowerCase().includes(loc)) return false;
+    if (skill && w.skill !== skill) return false;
+    if (avail === 'Available' && !w.available) return false;
+    if (avail === 'Busy'      &&  w.available) return false;
+    if (level && w.level !== level) return false;
+    return true;
+  });
+  document.getElementById('resultsCount').textContent = `${filtered.length} worker${filtered.length!==1?'s':''} found`;
+  const grid = document.getElementById('workersGrid');
+  if (!filtered.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--muted)"><div style="font-size:2.5rem;margin-bottom:12px">🔍</div><div>No workers found for your filters.</div></div>';
+    return;
+  }
+  grid.innerHTML = filtered.map(w => {
+    const inCart = cart.find(c=>c.id===w.id);
+    return `
+    <div class="worker-card">
+      <span class="avail-badge ${w.available?'available':'busy'}">${w.available?'Available':'Busy'}</span>
+      <div class="worker-card-top">
+        <div class="worker-avatar" style="${getAvatarStyle(w.skill)}">${getEmoji(w.skill)}</div>
+        <div class="worker-info">
+          <div class="worker-name">${w.name}</div>
+          <div class="worker-skill">${w.skill}</div>
+          <div class="worker-loc">📍 ${w.location} &nbsp;|&nbsp; <span class="stars">${starsHTML(w.rating)}</span> ${w.rating}</div>
         </div>
-        <div class="text-right">
-          <div class="font-bold">₹${w.price}</div>
-          <button onclick="addToCart(${w.id})" class="mt-2 bg-black text-white px-3 py-1 rounded">
-            Add
+      </div>
+      <div class="worker-stats">
+        <div class="stat"><div class="stat-val">${w.exp}y</div><div class="stat-key">Experience</div></div>
+        <div class="stat"><div class="stat-val ${levelClass(w.level)}" style="font-size:.75rem;margin-top:4px">${w.level}</div><div class="stat-key">Level</div></div>
+        <div class="stat"><div class="stat-val">₹${w.rate}</div><div class="stat-key">Per Day</div></div>
+      </div>
+      <div class="worker-card-foot">
+        <button class="btn-add" ${!w.available||inCart?'disabled':''} onclick="addToCart(${w.id})">
+          ${inCart?'✓ In Cart':!w.available?'Unavailable':'+ Add to Cart'}
+        </button>
+        <button class="btn-view" onclick="viewWorker(${w.id})">View</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function viewWorker(id) {
+  const w = workers.find(x=>x.id===id);
+  if (!w) return;
+  document.getElementById('modalTitle').textContent = w.name;
+  document.getElementById('modalBody').innerHTML = `
+    <div style="display:flex;gap:16px;align-items:center;margin-bottom:20px">
+      <div class="worker-avatar" style="${getAvatarStyle(w.skill)};width:64px;height:64px;font-size:2rem;border-radius:14px;display:flex;align-items:center;justify-content:center">${getEmoji(w.skill)}</div>
+      <div>
+        <div style="font-family:Syne,sans-serif;font-weight:700;font-size:1.1rem">${w.name}</div>
+        <div style="margin:4px 0"><span class="skill-tag">${w.skill}</span> &nbsp;<span class="level-badge ${levelClass(w.level)}">${w.level}</span></div>
+        <div style="color:var(--muted);font-size:.82rem">📍 ${w.location} · 📞 ${w.contact}</div>
+      </div>
+    </div>
+    <p style="color:var(--muted);line-height:1.7;margin-bottom:16px">${w.about}</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px">
+      <div class="stat-card"><div class="stat-card-val">${w.exp}y</div><div class="stat-card-label">Experience</div></div>
+      <div class="stat-card"><div class="stat-card-val">${w.rating}</div><div class="stat-card-label">Rating</div></div>
+      <div class="stat-card"><div class="stat-card-val">₹${w.rate}</div><div class="stat-card-label">Per Day</div></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Close</button>
+      ${w.available?`<button class="btn-save" onclick="addToCart(${w.id});closeModal()">Add to Cart</button>`:'<span style="color:var(--muted);font-size:.85rem">Currently unavailable</span>'}
+    </div>`;
+  openModal();
+}
+
+function renderCart() {
+  const el = document.getElementById('cartContent');
+  if (!cart.length) {
+    el.innerHTML = `
+      <div class="empty-cart">
+        <div class="icon">🛒</div>
+        <h3>Your cart is empty</h3>
+        <p style="color:var(--muted)">Browse workers and add them to get started.</p>
+        <button class="btn-order" style="width:auto;padding:11px 28px;margin-top:0" onclick="showPage('home')">Find Workers</button>
+      </div>`;
+    return;
+  }
+  const total = cart.reduce((s,c) => s + c.rate*c.days, 0);
+  const totalDays = cart.reduce((s,c) => s+c.days, 0);
+  el.innerHTML = `
+    <div style="padding:24px 32px 12px">
+      <h2 style="font-size:1.4rem;font-weight:800">Your Order Cart</h2>
+      <p style="color:var(--muted);font-size:.88rem;margin-top:4px">${cart.length} worker${cart.length>1?'s':''} selected</p>
+    </div>
+    <div class="cart-layout">
+      <div>
+        <div class="cart-list">
+          ${cart.map(item=>`
+          <div class="cart-item">
+            <div class="cart-item-avatar" style="${getAvatarStyle(item.skill)};border-radius:10px">${getEmoji(item.skill)}</div>
+            <div class="cart-item-info">
+              <div class="cart-item-name">${item.name}</div>
+              <div class="cart-item-sub">${item.skill} · ${item.level} · ₹${item.rate}/day · 📍 ${item.location}</div>
+            </div>
+            <div class="cart-item-days">
+              <span style="font-size:.8rem;color:var(--muted)">Days:</span>
+              <input type="number" class="days-input" min="1" value="${item.days}" onchange="updateDays(${item.id},this.value)">
+              <span style="font-size:.85rem;font-weight:600;color:var(--accent)">₹${item.rate*item.days}</span>
+              <button class="btn-remove" onclick="removeFromCart(${item.id})">✕ Remove</button>
+            </div>
+          </div>`).join('')}
+        </div>
+      </div>
+      <div>
+        <div class="order-summary">
+          <h3>Order Summary</h3>
+          ${cart.map(i=>`<div class="summary-row"><span>${i.name} × ${i.days}d</span><span>₹${i.rate*i.days}</span></div>`).join('')}
+          <div class="summary-row"><span style="color:var(--muted)">Total Days</span><span>${totalDays}</span></div>
+          <div class="summary-row total"><span>Total</span><span>₹${total.toLocaleString()}</span></div>
+          <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border)">
+            <div style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:14px">Your Contact Details</div>
+            <div class="form-group">
+              <label class="form-label">Full Name</label>
+              <input class="form-input" id="custName" placeholder="Your name">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Phone Number</label>
+              <input class="form-input" id="custPhone" placeholder="+91 XXXXX XXXXX">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Service Address</label>
+              <input class="form-input" id="custAddr" placeholder="Full address">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Preferred Date</label>
+              <input class="form-input" type="date" id="custDate">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Notes (optional)</label>
+              <input class="form-input" id="custNotes" placeholder="Any special requirements">
+            </div>
+          </div>
+          <button class="btn-order" onclick="placeOrder()">🚀 Place Order</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function placeOrder() {
+  const name  = document.getElementById('custName')?.value.trim();
+  const phone = document.getElementById('custPhone')?.value.trim();
+  const addr  = document.getElementById('custAddr')?.value.trim();
+  const date  = document.getElementById('custDate')?.value;
+  if (!name||!phone||!addr||!date) { showToast('Please fill all contact details','error'); return; }
+  const order = {
+    id: nextOrderId++,
+    customer: name, phone, address: addr, date,
+    notes: document.getElementById('custNotes')?.value||'',
+    workers: [...cart],
+    total: cart.reduce((s,c)=>s+c.rate*c.days,0),
+    status: 'New',
+    created: new Date().toLocaleString()
+  };
+  orders.push(order);
+  cart = [];
+  updateCartCount();
+  document.getElementById('cartContent').innerHTML = `
+    <div class="success-screen">
+      <div class="check">✅</div>
+      <h2>Order Placed Successfully!</h2>
+      <p>Order <strong>#${order.id}</strong> has been received. Our team will review and connect with you at <strong>${phone}</strong> to confirm and dispatch the workers.</p>
+      <p style="font-size:.85rem;color:var(--muted);margin-top:-12px">Expected at: ${addr} on ${date}</p>
+      <button class="btn-order" style="width:auto;padding:11px 28px" onclick="showPage('home')">Find More Workers</button>
+    </div>`;
+}
+
+let currentAdminTab = 'workers';
+
+function adminTab(tab, el) {
+  document.querySelectorAll('.sidebar-item').forEach(e=>e.classList.remove('active'));
+  el.classList.add('active');
+  currentAdminTab = tab;
+  if (tab==='workers') renderAdminWorkers();
+  if (tab==='orders')  renderAdminOrders();
+  if (tab==='stats')   renderAdminStats();
+}
+
+function renderAdminWorkers() {
+  const m = document.getElementById('adminMain');
+  m.innerHTML = `
+    <h2>Worker Management</h2>
+    <p class="admin-subtitle">Add, edit and manage your workforce profiles.</p>
+    <div class="stats-cards">
+      <div class="stat-card"><div class="stat-card-val">${workers.length}</div><div class="stat-card-label">Total Workers</div></div>
+      <div class="stat-card"><div class="stat-card-val">${workers.filter(w=>w.available).length}</div><div class="stat-card-label">Available Now</div></div>
+      <div class="stat-card"><div class="stat-card-val">${[...new Set(workers.map(w=>w.skill))].length}</div><div class="stat-card-label">Skill Categories</div></div>
+      <div class="stat-card"><div class="stat-card-val">${(workers.reduce((s,w)=>s+w.rating,0)/workers.length).toFixed(1)}</div><div class="stat-card-label">Avg Rating</div></div>
+    </div>
+    <div class="admin-table-wrap">
+      <div class="admin-table-header">
+        <h3>All Workers</h3>
+        <button class="btn-add-worker" onclick="openAddWorkerModal()">+ Add Worker</button>
+      </div>
+      <div style="overflow-x:auto">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th><th>Skill</th><th>Level</th><th>Location</th>
+            <th>Contact</th><th>Exp</th><th>Rating</th><th>Rate/Day</th><th>Status</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${workers.map(w=>`
+          <tr>
+            <td class="td-name">${w.name}</td>
+            <td><span class="skill-tag">${w.skill}</span></td>
+            <td><span class="level-badge ${levelClass(w.level)}">${w.level}</span></td>
+            <td>${w.location}</td>
+            <td style="font-size:.82rem;color:var(--muted)">${w.contact}</td>
+            <td>${w.exp}y</td>
+            <td><span class="stars" style="font-size:.8rem">★</span> ${w.rating}</td>
+            <td style="color:var(--accent);font-weight:600">₹${w.rate}</td>
+            <td><span class="avail-badge ${w.available?'available':'busy'}">${w.available?'Available':'Busy'}</span></td>
+            <td>
+              <div class="action-btns">
+                <button class="btn-edit" onclick="editWorker(${w.id})">Edit</button>
+                <button class="btn-del"  onclick="deleteWorker(${w.id})">Delete</button>
+              </div>
+            </td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+      </div>
+    </div>`;
+}
+
+function renderAdminOrders() {
+  const m = document.getElementById('adminMain');
+  m.innerHTML = `
+    <h2>Orders Management</h2>
+    <p class="admin-subtitle">Review, process and dispatch worker orders.</p>
+    ${!orders.length
+      ? `<div style="text-align:center;padding:80px;color:var(--muted)"><div style="font-size:3rem;margin-bottom:12px">📭</div><div>No orders yet.</div></div>`
+      : `<div class="orders-list">
+        ${orders.map(o=>`
+        <div class="order-card">
+          <div class="order-header">
+            <div>
+              <div class="order-id">#${o.id}</div>
+              <div style="color:var(--muted);font-size:.8rem;margin-top:2px">${o.created}</div>
+            </div>
+            <span class="order-status status-${o.status.toLowerCase()}">${o.status}</span>
+          </div>
+          <div class="order-customer" style="margin-bottom:10px">
+            👤 <strong>${o.customer}</strong> &nbsp;·&nbsp; 📞 ${o.phone} &nbsp;·&nbsp; 📍 ${o.address}
+          </div>
+          <div class="order-customer" style="margin-bottom:12px">📅 Date: ${o.date} &nbsp;|&nbsp; 💰 Total: <strong style="color:var(--accent)">₹${o.total.toLocaleString()}</strong></div>
+          <div class="order-workers">
+            ${o.workers.map(w=>`<span class="skill-tag">${getEmoji(w.skill)} ${w.name} (${w.days}d)</span>`).join('')}
+          </div>
+          ${o.notes?`<div style="color:var(--muted);font-size:.82rem;margin-bottom:12px">📝 ${o.notes}</div>`:''}
+          <div style="display:flex;gap:8px">
+            ${o.status==='New'?`<button class="btn-dispatch" onclick="updateOrderStatus(${o.id},'Processing')">⚙️ Start Processing</button>`:''}
+            ${o.status==='Processing'?`<button class="btn-dispatch" onclick="updateOrderStatus(${o.id},'Dispatched')">🚀 Mark Dispatched</button>`:''}
+            ${o.status==='Dispatched'?`<span style="color:var(--success);font-size:.85rem;font-weight:600">✅ Workers Dispatched</span>`:''}
+          </div>
+        </div>`).join('')}
+        </div>`}`;
+}
+
+function renderAdminStats() {
+  const m = document.getElementById('adminMain');
+  const skillCounts = {};
+  workers.forEach(w=>{ skillCounts[w.skill]=(skillCounts[w.skill]||0)+1; });
+  const totalRevenue = orders.reduce((s,o)=>s+o.total,0);
+  m.innerHTML = `
+    <h2>Overview</h2>
+    <p class="admin-subtitle">Platform statistics at a glance.</p>
+    <div class="stats-cards" style="grid-template-columns:repeat(3,1fr)">
+      <div class="stat-card"><div class="stat-card-val">${workers.length}</div><div class="stat-card-label">Total Workers</div></div>
+      <div class="stat-card"><div class="stat-card-val">${orders.length}</div><div class="stat-card-label">Total Orders</div></div>
+      <div class="stat-card"><div class="stat-card-val">₹${totalRevenue.toLocaleString()}</div><div class="stat-card-label">Total Revenue</div></div>
+    </div>
+    <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:24px;margin-top:20px">
+      <h3 style="margin-bottom:16px;font-size:1rem">Workers by Skill</h3>
+      ${Object.entries(skillCounts).map(([skill,count])=>`
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+          <div style="width:130px;font-size:.85rem">${getEmoji(skill)} ${skill}</div>
+          <div style="flex:1;background:var(--surface2);border-radius:4px;height:8px;overflow:hidden">
+            <div style="width:${(count/workers.length*100).toFixed(0)}%;background:var(--accent);height:100%;border-radius:4px"></div>
+          </div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--accent);font-size:.9rem;width:24px;text-align:right">${count}</div>
+        </div>`).join('')}
+    </div>`;
+}
+
+function updateOrderStatus(id, status) {
+  const o = orders.find(x=>x.id===id);
+  if (o) o.status = status;
+  renderAdminOrders();
+  showToast(`Order #${id} → ${status}`,'success');
+}
+
+function deleteWorker(id) {
+  if (!confirm('Delete this worker?')) return;
+  workers = workers.filter(w=>w.id!==id);
+  renderAdminWorkers();
+  showToast('Worker removed','success');
+}
+
+function openAddWorkerModal() { renderAdminAddForm(null); }
+
+function saveNewWorker() {
+  const w = collectWorkerForm();
+  if (!w) return;
+  w.id = nextWorkerId++;
+  workers.push(w);
+  renderAdminWorkers();
+  showToast('Worker added successfully ✓','success');
+}
+
+function editWorker(id) {
+  const w = workers.find(x=>x.id===id);
+  renderAdminAddForm(w);
+}
+
+function saveEditWorker(id) {
+  const updates = collectWorkerForm();
+  if (!updates) return;
+  const idx = workers.findIndex(x=>x.id===id);
+  if (idx>=0) workers[idx] = { ...workers[idx], ...updates };
+  renderAdminWorkers();
+  showToast('Worker updated ✓','success');
+}
+
+function renderAdminAddForm(w) {
+  const isEdit = !!w;
+  const skills = ['Electrician','Plumber','Tile Mason','Brick Mason','Cement Mason','Carpenter','Painter','Welder'];
+  const levels = ['Junior','Senior','Expert'];
+  const m = document.getElementById('adminMain');
+  m.innerHTML = `
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
+      <button onclick="renderAdminWorkers()" style="background:var(--surface2);border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:7px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:600;font-size:.8rem">← Back</button>
+      <h2 style="font-size:1.4rem;font-weight:800;margin:0">${isEdit ? 'Edit Worker' : 'Add New Worker'}</h2>
+    </div>
+    <p class="admin-subtitle">${isEdit ? `Editing profile for <strong>${w.name}</strong>` : 'Fill in the details below to register a new worker.'}</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:860px">
+      <div style="display:flex;flex-direction:column;gap:0">
+        <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:20px">
+          <div style="padding:14px 20px;border-bottom:1px solid var(--border);font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;display:flex;align-items:center;gap:8px">
+            <span style="font-size:1rem">👤</span> Personal Info
+          </div>
+          <div style="padding:20px;display:flex;flex-direction:column;gap:16px">
+            <div class="form-group" style="margin:0">
+              <label class="form-label">Full Name <span style="color:var(--danger)">*</span></label>
+              <input class="form-input" id="wName" value="${w?.name||''}" placeholder="e.g. Rajesh Kumar">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label class="form-label">Contact Number <span style="color:var(--danger)">*</span></label>
+              <input class="form-input" id="wContact" value="${w?.contact||''}" placeholder="10-digit mobile number" maxlength="10">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label class="form-label">Location / City <span style="color:var(--danger)">*</span></label>
+              <input class="form-input" id="wLocation" value="${w?.location||''}" placeholder="e.g. Agartala, Udaipur">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label class="form-label">About / Bio</label>
+              <textarea class="form-input" id="wAbout" rows="3" placeholder="Brief description of expertise and experience" style="resize:vertical;min-height:80px">${w?.about||''}</textarea>
+            </div>
+          </div>
+        </div>
+        <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;overflow:hidden">
+          <div style="padding:14px 20px;border-bottom:1px solid var(--border);font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;display:flex;align-items:center;gap:8px">
+            <span style="font-size:1rem">📋</span> Availability
+          </div>
+          <div style="padding:20px">
+            <label class="form-label">Current Status</label>
+            <div style="display:flex;gap:10px;margin-top:4px">
+              <label style="flex:1;cursor:pointer">
+                <input type="radio" name="wAvail" id="wAvailYes" value="1" ${w?.available!==false?'checked':''} style="display:none">
+                <div class="avail-toggle" data-for="wAvailYes" onclick="setAvail(1)" style="padding:12px;border-radius:9px;border:2px solid ${w?.available!==false?'var(--success)':'var(--border)'};background:${w?.available!==false?'rgba(76,175,114,.08)':'var(--surface2)'};text-align:center;transition:all .2s">
+                  <div style="font-size:1.3rem;margin-bottom:4px">✅</div>
+                  <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.85rem;color:${w?.available!==false?'var(--success)':'var(--muted)'}">Available</div>
+                  <div style="font-size:.72rem;color:var(--muted);margin-top:2px">Ready for work</div>
+                </div>
+              </label>
+              <label style="flex:1;cursor:pointer">
+                <input type="radio" name="wAvail" id="wAvailNo" value="0" ${w?.available===false?'checked':''} style="display:none">
+                <div class="avail-toggle" data-for="wAvailNo" onclick="setAvail(0)" style="padding:12px;border-radius:9px;border:2px solid ${w?.available===false?'var(--danger)':'var(--border)'};background:${w?.available===false?'rgba(232,92,74,.08)':'var(--surface2)'};text-align:center;transition:all .2s">
+                  <div style="font-size:1.3rem;margin-bottom:4px">🔴</div>
+                  <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.85rem;color:${w?.available===false?'var(--danger)':'var(--muted)'}">Busy</div>
+                  <div style="font-size:.72rem;color:var(--muted);margin-top:2px">Currently engaged</div>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:0">
+        <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:20px">
+          <div style="padding:14px 20px;border-bottom:1px solid var(--border);font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;display:flex;align-items:center;gap:8px">
+            <span style="font-size:1rem">🔧</span> Skill & Experience
+          </div>
+          <div style="padding:20px;display:flex;flex-direction:column;gap:16px">
+            <div class="form-group" style="margin:0">
+              <label class="form-label">Skill / Trade <span style="color:var(--danger)">*</span></label>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px" id="skillPicker">
+                ${skills.map(s=>{
+                  const active = (w?.skill===s)||((!w)&&s===skills[0]);
+                  const em = getEmoji(s);
+                  return `<div onclick="selectSkill('${s}')" id="skill-${s.replace(/ /g,'-')}"
+                    style="padding:10px 12px;border-radius:9px;border:2px solid ${active?'var(--accent)':'var(--border)'};background:${active?'rgba(245,166,35,.08)':'var(--surface2)'};cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .15s">
+                    <span style="font-size:1rem">${em}</span>
+                    <span style="font-family:'Syne',sans-serif;font-weight:${active?'700':'500'};font-size:.82rem;color:${active?'var(--accent)':'var(--muted)'}">${s}</span>
+                  </div>`;
+                }).join('')}
+              </div>
+              <input type="hidden" id="wSkill" value="${w?.skill||skills[0]}">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label class="form-label">Skill Level</label>
+              <div style="display:flex;gap:8px;margin-top:4px">
+                ${levels.map(l=>{
+                  const active = w?.level===l || (!w && l==='Junior');
+                  const col = l==='Expert'?'var(--success)':l==='Senior'?'#6495ed':'var(--accent)';
+                  return `<div onclick="selectLevel('${l}')" id="level-${l}"
+                    style="flex:1;padding:10px;border-radius:9px;border:2px solid ${active?col:'var(--border)'};background:${active?'rgba(76,175,114,.08)':'var(--surface2)'};cursor:pointer;text-align:center;transition:all .15s">
+                    <div style="font-size:.7rem;margin-bottom:3px">${l==='Expert'?'🏆':l==='Senior'?'⭐':'🌱'}</div>
+                    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.8rem;color:${active?col:'var(--muted)'}">${l}</div>
+                  </div>`;
+                }).join('')}
+              </div>
+              <input type="hidden" id="wLevel" value="${w?.level||'Junior'}">
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+              <div class="form-group" style="margin:0">
+                <label class="form-label">Experience (years)</label>
+                <input class="form-input" id="wExp" type="number" min="0" max="50" value="${w?.exp??0}" placeholder="0">
+              </div>
+              <div class="form-group" style="margin:0">
+                <label class="form-label">Rating (1–5)</label>
+                <input class="form-input" id="wRating" type="number" step=".1" min="1" max="5" value="${w?.rating??4.0}" placeholder="4.0">
+              </div>
+            </div>
+            <div class="form-group" style="margin:0">
+              <label class="form-label">Daily Rate (₹)</label>
+              <div style="position:relative">
+                <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-weight:600">₹</span>
+                <input class="form-input" id="wRate" type="number" min="0" value="${w?.rate??500}" placeholder="500" style="padding-left:32px">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px">
+          <button onclick="renderAdminWorkers()" style="flex:1;padding:13px;border-radius:10px;background:transparent;border:1px solid var(--border);color:var(--muted);font-family:'Syne',sans-serif;font-weight:700;cursor:pointer;font-size:.9rem">Cancel</button>
+          <button onclick="${isEdit?`saveEditWorker(${w.id})`:'saveNewWorker()'}" style="flex:2;padding:13px;border-radius:10px;background:var(--accent);border:none;color:#000;font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;cursor:pointer">
+            ${isEdit?'💾 Save Changes':'➕ Add Worker'}
           </button>
         </div>
       </div>
-    `;
+    </div>`;
+  window._availVal = w?.available!==false ? 1 : 0;
+}
+
+function selectSkill(skill) {
+  document.getElementById('wSkill').value = skill;
+  document.querySelectorAll('#skillPicker > div').forEach(el => {
+    const isActive = el.id === 'skill-'+skill.replace(/ /g,'-');
+    el.style.border = isActive ? '2px solid var(--accent)' : '2px solid var(--border)';
+    el.style.background = isActive ? 'rgba(245,166,35,.08)' : 'var(--surface2)';
+    el.querySelector('span:last-child').style.color = isActive ? 'var(--accent)' : 'var(--muted)';
+    el.querySelector('span:last-child').style.fontWeight = isActive ? '700' : '500';
   });
 }
 
-function addToCart(id){
-  const worker = workers.find(w => w.id === id);
-  if(cart.find(i => i.id === id)) return;
-  cart.push(worker);
-  renderCart();
-}
-
-function renderCart(){
-  const container = document.getElementById("cart");
-  let total = 0;
-  container.innerHTML = "";
-
-  cart.forEach((item,i)=>{
-    total += item.price;
-    container.innerHTML += `
-      <div class="flex justify-between mb-2">
-        <span>${item.name}</span>
-        <button onclick="removeItem(${i})" class="text-red-500">x</button>
-      </div>
-    `;
+function selectLevel(level) {
+  document.getElementById('wLevel').value = level;
+  const cols = { Expert:'var(--success)', Senior:'#6495ed', Junior:'var(--accent)' };
+  ['Expert','Senior','Junior'].forEach(l => {
+    const el = document.getElementById('level-'+l);
+    const active = l===level;
+    el.style.border = active ? `2px solid ${cols[l]}` : '2px solid var(--border)';
+    el.style.background = active ? 'rgba(76,175,114,.08)' : 'var(--surface2)';
+    el.querySelector('div:last-child').style.color = active ? cols[l] : 'var(--muted)';
   });
-
-  document.getElementById("total").innerText = total;
-  document.getElementById("total2").innerText = total;
 }
 
-function removeItem(i){
-  cart.splice(i,1);
-  renderCart();
+function setAvail(val) {
+  window._availVal = val;
+  const yEl = document.querySelector('[data-for="wAvailYes"]');
+  const nEl = document.querySelector('[data-for="wAvailNo"]');
+  if (!yEl||!nEl) return;
+  yEl.style.border = val===1 ? '2px solid var(--success)' : '2px solid var(--border)';
+  yEl.style.background = val===1 ? 'rgba(76,175,114,.08)' : 'var(--surface2)';
+  yEl.querySelector('div:nth-child(2)').style.color = val===1 ? 'var(--success)' : 'var(--muted)';
+  nEl.style.border = val===0 ? '2px solid var(--danger)' : '2px solid var(--border)';
+  nEl.style.background = val===0 ? 'rgba(232,92,74,.08)' : 'var(--surface2)';
+  nEl.querySelector('div:nth-child(2)').style.color = val===0 ? 'var(--danger)' : 'var(--muted)';
 }
 
-function filterWorkers(){
-  const loc = document.getElementById("locationFilter").value;
-  const skill = document.getElementById("skillFilter").value;
-
-  let filtered = workers;
-
-  if(loc !== "all") filtered = filtered.filter(w=>w.location===loc);
-  if(skill !== "all") filtered = filtered.filter(w=>w.skill===skill);
-
-  renderWorkers(filtered);
+function collectWorkerForm() {
+  const name    = document.getElementById('wName')?.value.trim();
+  const contact = document.getElementById('wContact')?.value.trim();
+  const location= document.getElementById('wLocation')?.value.trim();
+  if (!name||!contact||!location) { showToast('Please fill all required fields','error'); return null; }
+  return {
+    name, contact, location,
+    skill:    document.getElementById('wSkill')?.value || 'Electrician',
+    level:    document.getElementById('wLevel')?.value || 'Junior',
+    exp:      parseInt(document.getElementById('wExp')?.value)||0,
+    rating:   Math.min(5, Math.max(1, parseFloat(document.getElementById('wRating')?.value)||4.0)),
+    rate:     parseInt(document.getElementById('wRate')?.value)||500,
+    about:    document.getElementById('wAbout')?.value || '',
+    available: (window._availVal ?? 1) === 1,
+  };
 }
 
-function placeOrder(){
-  if(cart.length===0){
-    alert("Add workers first");
-    return;
-  }
-  alert("Order placed. Manager will contact you.");
-  cart = [];
-  renderCart();
+function openModal()  { document.getElementById('modalOverlay').classList.add('open'); }
+function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+function closeModalOutside(e) { if (e.target===document.getElementById('modalOverlay')) closeModal(); }
+
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `toast ${type} show`;
+  setTimeout(()=>{ t.classList.remove('show'); }, 3000);
 }
 
-renderWorkers(workers);
+renderGrid();
 </script>
-
 </body>
 </html>
