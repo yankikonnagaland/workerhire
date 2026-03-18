@@ -1,140 +1,488 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Hire Worker</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hire Workers</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial;
-      background: #f5f5f5;
-      padding: 20px;
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      background: #f6f7fb;
+      color: #111827;
     }
-    .card {
-      background: white;
-      padding: 15px;
-      margin: 10px 0;
-      border-radius: 10px;
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
     }
-    button {
-      padding: 8px 12px;
-      border: none;
-      background: black;
+
+    .hero {
+      background: linear-gradient(135deg, #111827, #1f2937);
       color: white;
-      border-radius: 5px;
-      cursor: pointer;
+      padding: 28px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
     }
-    input, select, textarea {
+
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 40px;
+      line-height: 1.1;
+    }
+
+    .hero p {
+      margin: 0;
+      color: rgba(255,255,255,0.8);
+      font-size: 16px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .panel {
+      background: white;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    }
+
+    .section-title {
+      margin: 0 0 16px;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .filter-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    select,
+    input,
+    textarea {
       width: 100%;
-      padding: 8px;
-      margin: 5px 0;
+      padding: 14px 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      font-size: 15px;
+      outline: none;
+      background: white;
+    }
+
+    select:focus,
+    input:focus,
+    textarea:focus {
+      border-color: #111827;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .worker-list {
+      display: grid;
+      gap: 16px;
+    }
+
+    .worker-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      padding: 18px;
+      background: #fff;
+      transition: 0.2s ease;
+    }
+
+    .worker-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.06);
+    }
+
+    .worker-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .worker-name {
+      margin: 0 0 6px;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .worker-meta {
+      color: #6b7280;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .worker-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: #f3f4f6;
+      color: #374151;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .price {
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      text-align: right;
+    }
+
+    .price-note {
+      color: #6b7280;
+      font-size: 12px;
+      text-align: right;
+      margin-bottom: 14px;
+    }
+
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .btn-primary {
+      background: #111827;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #000;
+    }
+
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .btn-danger {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .btn-full {
+      width: 100%;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      padding: 14px;
+      background: #f9fafb;
+      border-radius: 14px;
+      margin-bottom: 12px;
+      border: 1px solid #eef2f7;
+    }
+
+    .cart-item h4 {
+      margin: 0 0 4px;
+      font-size: 16px;
+    }
+
+    .cart-item p {
+      margin: 0;
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    .cart-total {
+      font-size: 22px;
+      font-weight: 800;
+      margin: 18px 0 0;
+    }
+
+    .checkout-box {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .checkout-box h3 {
+      margin: 0 0 14px;
+      font-size: 20px;
+    }
+
+    .checkout-box .field {
+      margin-bottom: 12px;
+    }
+
+    .empty {
+      color: #6b7280;
+      font-size: 15px;
+      padding: 12px 0;
+    }
+
+    .success-box {
+      display: none;
+      margin-top: 16px;
+      padding: 14px;
+      background: #ecfdf5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .filter-row {
+        grid-template-columns: 1fr;
+      }
+
+      .worker-top {
+        flex-direction: column;
+      }
+
+      .price,
+      .price-note {
+        text-align: left;
+      }
+
+      .hero h1 {
+        font-size: 32px;
+      }
     }
   </style>
 </head>
-
 <body>
+  <div class="container">
+    <div class="hero">
+      <h1>Hire Skilled Workers</h1>
+      <p>Book electricians, plumbers, tile masons, brick masons and more based on serviceable location.</p>
+    </div>
 
-<h1>Hire Workers</h1>
+    <div class="layout">
+      <div>
+        <div class="panel">
+          <h2 class="section-title">Find Workers</h2>
 
-<!-- FILTER -->
-<select id="locationFilter" onchange="filterWorkers()">
-  <option value="all">All Locations</option>
-  <option>Dimapur</option>
-  <option>Kohima</option>
-  <option>Mokokchung</option>
-</select>
+          <div class="filter-row">
+            <select id="locationFilter" onchange="filterWorkers()">
+              <option value="all">All Locations</option>
+              <option value="Dimapur">Dimapur</option>
+              <option value="Kohima">Kohima</option>
+              <option value="Mokokchung">Mokokchung</option>
+            </select>
 
-<div id="workers"></div>
+            <select id="skillFilter" onchange="filterWorkers()">
+              <option value="all">All Skills</option>
+              <option value="Electrician">Electrician</option>
+              <option value="Plumber">Plumber</option>
+              <option value="Tile Mason">Tile Mason</option>
+              <option value="Mason">Mason</option>
+            </select>
+          </div>
 
-<h2>Cart</h2>
-<div id="cart"></div>
-<p><b>Total: ₹<span id="total">0</span></b></p>
-
-<h2>Checkout</h2>
-<input id="name" placeholder="Name">
-<input id="phone" placeholder="Phone">
-<textarea id="address" placeholder="Address"></textarea>
-
-<button onclick="placeOrder()">Place Order</button>
-
-<script>
-const workers = [
-  {id:1,name:"Alem",location:"Dimapur",skill:"Electrician",price:1200},
-  {id:2,name:"Imkong",location:"Kohima",skill:"Plumber",price:1000},
-  {id:3,name:"Senti",location:"Dimapur",skill:"Tile Mason",price:1500},
-  {id:4,name:"Walling",location:"Mokokchung",skill:"Mason",price:1600}
-];
-
-let cart = [];
-
-function renderWorkers(list){
-  const container = document.getElementById("workers");
-  container.innerHTML = "";
-
-  list.forEach(w => {
-    container.innerHTML += `
-      <div class="card">
-        <b>${w.name}</b><br>
-        ${w.skill} • ${w.location}<br>
-        ₹${w.price}<br><br>
-        <button onclick="addToCart(${w.id})">Add</button>
+          <div id="workers" class="worker-list"></div>
+        </div>
       </div>
-    `;
-  });
-}
 
-function addToCart(id){
-  const worker = workers.find(w => w.id === id);
-  cart.push(worker);
-  renderCart();
-}
+      <div>
+        <div class="panel">
+          <h2 class="section-title">Cart</h2>
+          <div id="cart"></div>
+          <div class="cart-total">Total: ₹<span id="total">0</span></div>
 
-function renderCart(){
-  const container = document.getElementById("cart");
-  container.innerHTML = "";
-  let total = 0;
+          <div class="checkout-box">
+            <h3>Checkout</h3>
 
-  cart.forEach((item, i) => {
-    total += item.price;
-    container.innerHTML += `
-      <div class="card">
-        ${item.name} - ₹${item.price}
-        <button onclick="removeItem(${i})">Remove</button>
+            <div class="field">
+              <input id="name" placeholder="Customer name" />
+            </div>
+
+            <div class="field">
+              <input id="phone" placeholder="Phone number" />
+            </div>
+
+            <div class="field">
+              <input id="serviceLocation" placeholder="Service location / city" />
+            </div>
+
+            <div class="field">
+              <textarea id="address" placeholder="Address / work details"></textarea>
+            </div>
+
+            <button class="btn-primary btn-full" onclick="placeOrder()">Place Order</button>
+
+            <div id="successBox" class="success-box">
+              Order placed successfully. The manager will contact the customer and arrange the worker.
+            </div>
+          </div>
+        </div>
       </div>
-    `;
-  });
+    </div>
+  </div>
 
-  document.getElementById("total").innerText = total;
-}
+  <script>
+    const workers = [
+      { id: 1, name: "Alem", location: "Dimapur", skill: "Electrician", skillLevel: "Advanced", experience: 8, rating: 4.8, price: 1200 },
+      { id: 2, name: "Imkong", location: "Kohima", skill: "Plumber", skillLevel: "Intermediate", experience: 5, rating: 4.6, price: 1000 },
+      { id: 3, name: "Senti", location: "Dimapur", skill: "Tile Mason", skillLevel: "Advanced", experience: 10, rating: 4.9, price: 1500 },
+      { id: 4, name: "Walling", location: "Mokokchung", skill: "Mason", skillLevel: "Expert", experience: 14, rating: 4.7, price: 1600 }
+    ];
 
-function removeItem(i){
-  cart.splice(i,1);
-  renderCart();
-}
+    let cart = [];
 
-function filterWorkers(){
-  const loc = document.getElementById("locationFilter").value;
-  if(loc === "all"){
+    function renderWorkers(list) {
+      const container = document.getElementById("workers");
+      container.innerHTML = "";
+
+      if (list.length === 0) {
+        container.innerHTML = `<div class="empty">No workers found for the selected filters.</div>`;
+        return;
+      }
+
+      list.forEach((w) => {
+        container.innerHTML += `
+          <div class="worker-card">
+            <div class="worker-top">
+              <div>
+                <h3 class="worker-name">${w.name}</h3>
+                <div class="worker-meta">${w.skill} • ${w.location}</div>
+                <div class="worker-tags">
+                  <span class="tag">${w.skillLevel}</span>
+                  <span class="tag">${w.experience} years exp</span>
+                  <span class="tag">⭐ ${w.rating}</span>
+                </div>
+              </div>
+              <div>
+                <div class="price">₹${w.price}</div>
+                <div class="price-note">Starting service charge</div>
+                <button class="btn-primary" onclick="addToCart(${w.id})">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function addToCart(id) {
+      const worker = workers.find((w) => w.id === id);
+      const alreadyAdded = cart.find((item) => item.id === id);
+
+      if (alreadyAdded) {
+        alert("This worker is already in the cart.");
+        return;
+      }
+
+      cart.push(worker);
+      renderCart();
+    }
+
+    function renderCart() {
+      const container = document.getElementById("cart");
+      let total = 0;
+
+      if (cart.length === 0) {
+        container.innerHTML = `<div class="empty">No workers added yet.</div>`;
+        document.getElementById("total").innerText = 0;
+        return;
+      }
+
+      container.innerHTML = "";
+
+      cart.forEach((item, index) => {
+        total += item.price;
+        container.innerHTML += `
+          <div class="cart-item">
+            <div>
+              <h4>${item.name}</h4>
+              <p>${item.skill} • ${item.location}</p>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-weight:700; margin-bottom:8px;">₹${item.price}</div>
+              <button class="btn-danger" onclick="removeItem(${index})">Remove</button>
+            </div>
+          </div>
+        `;
+      });
+
+      document.getElementById("total").innerText = total;
+    }
+
+    function removeItem(index) {
+      cart.splice(index, 1);
+      renderCart();
+    }
+
+    function filterWorkers() {
+      const location = document.getElementById("locationFilter").value;
+      const skill = document.getElementById("skillFilter").value;
+
+      let filtered = workers;
+
+      if (location !== "all") {
+        filtered = filtered.filter((w) => w.location === location);
+      }
+
+      if (skill !== "all") {
+        filtered = filtered.filter((w) => w.skill === skill);
+      }
+
+      renderWorkers(filtered);
+    }
+
+    function placeOrder() {
+      const name = document.getElementById("name").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const serviceLocation = document.getElementById("serviceLocation").value.trim();
+      const address = document.getElementById("address").value.trim();
+      const successBox = document.getElementById("successBox");
+
+      if (!name || !phone || !serviceLocation || !address || cart.length === 0) {
+        alert("Fill all checkout details and add at least one worker.");
+        return;
+      }
+
+      successBox.style.display = "block";
+
+      cart = [];
+      renderCart();
+
+      document.getElementById("name").value = "";
+      document.getElementById("phone").value = "";
+      document.getElementById("serviceLocation").value = "";
+      document.getElementById("address").value = "";
+    }
+
     renderWorkers(workers);
-  } else {
-    renderWorkers(workers.filter(w => w.location === loc));
-  }
-}
-
-function placeOrder(){
-  const name = document.getElementById("name").value;
-  const phone = document.getElementById("phone").value;
-
-  if(!name || !phone || cart.length === 0){
-    alert("Fill details and add workers");
-    return;
-  }
-
-  alert("Order placed! Manager will contact you.");
-  cart = [];
-  renderCart();
-}
-
-renderWorkers(workers);
-</script>
-
+    renderCart();
+  </script>
 </body>
 </html>
